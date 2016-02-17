@@ -1,4 +1,4 @@
-# ArsenalPay Module for OpenCart2.0 CMS
+# ArsenalPay Module for OpenCart 2.0 CMS
 *Arsenal Media LLC*  
 [*Arsenal Pay processing server*]( https://arsenalpay.ru/)
 ## Version
