@@ -12,6 +12,12 @@ class ControllerPaymentArsenalpay extends Controller {
         $amount = $this->currency->format($order_info['total'], $order_info['currency_code'], false, false);
         $format_amount = number_format($amount, 2, '.', '');
         
+        if (!$order_info['payment_address_2']) {
+            $address= $order_info['payment_address_1'] . ', ' . $order_info['payment_city'] . ', ' . $order_info['payment_zone'];
+        } else {
+            $address = $order_info['payment_address_1'] . ', ' . $order_info['payment_address_2'] . ', ' . $order_info['payment_city'] . ', ' . $order_info['payment_zone'];
+        }
+
         $url_params = array(
             'src' => $this->config->get('arsenalpay_src'),
             't' => $this->config->get('arsenalpay_merchant'),
@@ -20,16 +26,22 @@ class ControllerPaymentArsenalpay extends Controller {
             'msisdn'=> $order_info['telephone'],
             'css' => $this->config->get('arsenalpay_css'),
             'frame' => $this->config->get('arsenalpay_frame_mode'),
+            'description' => $order_info['store_name'],
+            'full_name' => $order_info['payment_firstname'] . ' ' . $order_info['payment_lastname'],
+            'phone' => $order_info['telephone'],
+            'email' => $order_info['email'],
+            'address' => $address,
+            'other' => '',
         );
         $data['iframe_url'] = $this->config->get('arsenalpay_frame_url') . '?' . http_build_query($url_params, '', '&');
-		$data['button_confirm'] = $this->language->get('button_confirm');
+        $data['button_confirm'] = $this->language->get('button_confirm');
         $data['iframe_params'] = $this->config->get('arsenalpay_frame_params');
 
-    	if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/arsenalpay_iframe.tpl')) {
-    		return $this->load->view($this->config->get('config_template') . '/template/payment/arsenalpay_iframe.tpl', $data);         
-    	} else {
-    		return $this->load->view('default/template/payment/arsenalpay_iframe.tpl', $data);
-    	}	
+        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/arsenalpay_iframe.tpl')) {
+            return $this->load->view($this->config->get('config_template') . '/template/payment/arsenalpay_iframe.tpl', $data);         
+        } else {
+            return $this->load->view('default/template/payment/arsenalpay_iframe.tpl', $data);
+        }   
     }
         
     public function ap_callback() {
@@ -41,7 +53,7 @@ class ControllerPaymentArsenalpay extends Controller {
             $this->exitf( 'ERR_IP' );
         }
 
-		$keyArray = array
+        $keyArray = array
         (
             'ID',           /* Идентификатор ТСП/ merchant identifier */
             'FUNCTION',     /* Тип запроса/ type of request to which the response is received*/
@@ -74,7 +86,7 @@ class ControllerPaymentArsenalpay extends Controller {
         }
         $this->log($post_msg);
         $ap_order_id = $this->request->post['ACCOUNT'];
-		
+        
         $order_info = $this->model_checkout_order->getOrder($ap_order_id);
 
         if( $order_info === false || $order_info['order_id'] != $ap_order_id ) {
@@ -124,7 +136,7 @@ class ControllerPaymentArsenalpay extends Controller {
                 NO - account not exists
             */
             $comment = "Payment waiting";
-			$this->model_checkout_order->addOrderHistory($ap_order_id, $this->config->get('arsenalpay_waiting_status_id'), $comment, true);
+            $this->model_checkout_order->addOrderHistory($ap_order_id, $this->config->get('arsenalpay_waiting_status_id'), $comment, true);
             $this->exitf( 'YES' );
         } 
         elseif( ( $this->request->post['FUNCTION']=="payment" ) && ( $this->request->post['STATUS'] === "payment" ) ) {
@@ -155,7 +167,7 @@ class ControllerPaymentArsenalpay extends Controller {
         }
     }
 
-	private function _checkSign( $ars_callback, $pass) {
+    private function _checkSign( $ars_callback, $pass) {
         $validSign = ( $ars_callback['SIGN'] === md5(md5($ars_callback['ID']).
                 md5($ars_callback['FUNCTION']).md5($ars_callback['RRN']).
                 md5($ars_callback['PAYER']).md5($ars_callback['AMOUNT']).md5($ars_callback['ACCOUNT']).
