@@ -4,6 +4,7 @@
 ## Version
 *2.0.0*  
 *Has been tested on OpenCart 2.0 till v2.1.0.2*  
+*Required php >= 5.4.0*
 ##### Basic feature list:  
  * Allows seamlessly integrate unified payment frame into your site.
  * New payment method ArsenalPay will appear to pay for your products and services.
