@@ -1,6 +1,6 @@
 <?php
 
-class ModelPaymentWorldpay extends Model {
+class ModelPaymentArsenalpay extends Model {
 
 
 }
