@@ -8,7 +8,7 @@
 ##### Basic feature list:  
  * Allows seamlessly integrate unified payment frame into your site.
  * New payment method ArsenalPay will appear to pay for your products and services.
- * Allows to pay using mobile commerce and bank aquiring. More methods are about to become available. Please check for updates.
+ * Allows to pay using mobile commerce and bank acquiring. More methods are about to become available. Please check for updates.
  * Supports two languages (Russian, English).  
  
 ### How to install
